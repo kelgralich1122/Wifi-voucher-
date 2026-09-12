@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+:root {
+  --p1: #ff4d80;
+  --p1-dark: #d61f57;
+  --p2: #3d8bfd;
+  --p2-dark: #1f5fd0;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  background: #2a0a2e;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}
+
+.font-game {
+  font-family: "Fredoka", ui-rounded, system-ui, sans-serif;
+}
+
+/* ---------- Animations ---------- */
+@keyframes floaty {
+  0% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(6deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.18);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0.6) translateY(24px);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05) translateY(-4px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes rise-fade {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+    transform: translateY(-10px) scale(1);
+  }
+  100% {
+    transform: translateY(-120px) scale(1.1) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.anim-floaty {
+  animation: floaty 3.2s ease-in-out infinite;
+}
+.anim-heartbeat {
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+.anim-pop {
+  animation: pop-in 0.45s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+.anim-wiggle {
+  animation: wiggle 0.6s ease-in-out infinite;
+}
+.anim-bounce-soft {
+  animation: bounce-soft 1.6s ease-in-out infinite;
+}
+
+.title-gradient {
+  background: linear-gradient(
+    90deg,
+    #ff5c8a,
+    #ff9ac4,
+    #ffd166,
+    #ff9ac4,
+    #ff5c8a
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3s linear infinite;
+  filter: drop-shadow(0 4px 0 rgba(180, 20, 80, 0.35));
+}
+
+.btn-juicy {
+  transition: transform 0.12s cubic-bezier(0.22, 1.4, 0.36, 1),
+    box-shadow 0.12s ease, filter 0.12s ease;
+}
+.btn-juicy:active {
+  transform: translateY(3px) scale(0.97);
+  filter: brightness(1.05);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.scrollbar-cute::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-cute::-webkit-scrollbar-thumb {
+  background: rgba(255, 93, 138, 0.5);
+  border-radius: 8px;
+}
+.scrollbar-cute {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 93, 138, 0.5) transparent;
+}
