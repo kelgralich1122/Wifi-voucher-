@@ -20,6 +20,7 @@
       href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -35,34 +36,77 @@
         overflow: hidden;
       }
 
-      #root {
+      .loader-container {
         width: 100%;
         height: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 20px;
+        background: linear-gradient(135deg, #ff5c8a 0%, #ff8fab 100%);
+      }
+
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid white;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loader-text {
+        color: white;
+        font-size: 18px;
+        font-weight: 600;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      #root {
+        width: 100%;
+        height: 100%;
       }
 
       .game-container {
         width: 100%;
         height: 100%;
-        max-width: 1024px;
-        max-height: 768px;
         position: relative;
         background: linear-gradient(135deg, #ff5c8a 0%, #ff8fab 100%);
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .game-header {
+        padding: 15px;
+        text-align: center;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        z-index: 20;
+        background: rgba(0,0,0,0.1);
       }
 
       .game-title {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: white;
         font-size: 32px;
         font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        z-index: 10;
+        margin-bottom: 5px;
+      }
+
+      .game-status {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .game-main {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
       }
 
       .game-board {
@@ -82,32 +126,60 @@
         font-size: 24px;
         cursor: move;
         transition: transform 0.1s ease;
+        box-shadow: 0 0 15px rgba(255,255,255,0.6);
       }
 
       .player1 {
-        background: rgba(255, 107, 107, 0.8);
+        background: rgba(255, 107, 107, 0.9);
         border: 3px solid white;
       }
 
       .player2 {
-        background: rgba(255, 142, 167, 0.8);
+        background: rgba(255, 142, 167, 0.9);
         border: 3px solid white;
+      }
+
+      .player-label {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        color: white;
+        white-space: nowrap;
+        font-weight: 600;
       }
 
       .heart {
         position: absolute;
-        font-size: 24px;
+        font-size: 28px;
+        cursor: pointer;
         animation: float 3s ease-in-out infinite;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
       }
 
       @keyframes float {
         0%, 100% {
           transform: translateY(0px) scale(1);
-          opacity: 1;
         }
         50% {
-          transform: translateY(-20px) scale(1.1);
+          transform: translateY(-15px) scale(1.15);
         }
+      }
+
+      .score-board {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        z-index: 10;
+        background: rgba(0,0,0,0.2);
+        padding: 10px 20px;
+        border-radius: 20px;
       }
 
       .controls {
@@ -117,20 +189,12 @@
         transform: translateX(-50%);
         color: white;
         text-align: center;
-        font-size: 14px;
+        font-size: 12px;
         z-index: 10;
-      }
-
-      .score {
-        position: absolute;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: white;
-        font-size: 24px;
-        font-weight: 600;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        z-index: 10;
+        background: rgba(0,0,0,0.3);
+        padding: 10px 15px;
+        border-radius: 15px;
+        backdrop-filter: blur(5px);
       }
 
       .btn-reset {
@@ -138,7 +202,7 @@
         bottom: 100px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 10px 20px;
+        padding: 12px 25px;
         background: white;
         color: #ff5c8a;
         border: none;
@@ -149,155 +213,366 @@
         z-index: 10;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         transition: transform 0.2s ease;
+        font-family: 'Fredoka', sans-serif;
       }
 
       .btn-reset:hover {
-        transform: scale(1.05);
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       }
 
       .btn-reset:active {
-        transform: scale(0.98);
+        transform: scale(0.95);
+      }
+
+      .share-section {
+        position: absolute;
+        top: 70px;
+        right: 15px;
+        z-index: 10;
+        background: rgba(255,255,255,0.95);
+        padding: 12px 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      .share-title {
+        font-size: 12px;
+        color: #ff5c8a;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .share-link {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .share-link input {
+        padding: 8px 10px;
+        border: 2px solid #ff5c8a;
+        border-radius: 5px;
+        font-size: 11px;
+        max-width: 200px;
+        font-family: 'Fredoka', sans-serif;
+      }
+
+      .share-link button {
+        padding: 8px 12px;
+        background: #ff5c8a;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        transition: background 0.2s;
+        font-family: 'Fredoka', sans-serif;
+      }
+
+      .share-link button:hover {
+        background: #ff4572;
+      }
+
+      .mobile-controls {
+        display: none;
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        z-index: 15;
+      }
+
+      .dpad {
+        display: grid;
+        grid-template-columns: 50px 50px 50px;
+        grid-template-rows: 50px 50px 50px;
+        gap: 5px;
+      }
+
+      .dpad-btn {
+        background: rgba(255,255,255,0.7);
+        border: 2px solid white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.1s;
+        user-select: none;
+      }
+
+      .dpad-btn:active {
+        background: rgba(255,255,255,0.95);
+      }
+
+      .up { grid-column: 2; grid-row: 1; }
+      .left { grid-column: 1; grid-row: 2; }
+      .down { grid-column: 2; grid-row: 3; }
+      .right { grid-column: 3; grid-row: 2; }
+
+      @media (max-width: 768px) {
+        .game-title {
+          font-size: 24px;
+        }
+
+        .score-board {
+          font-size: 16px;
+          top: 60px;
+        }
+
+        .controls {
+          font-size: 11px;
+        }
+
+        .mobile-controls {
+          display: block;
+        }
+
+        .share-section {
+          top: auto;
+          right: 10px;
+          bottom: 160px;
+        }
       }
     </style>
   </head>
   <body>
-    <div id="root">
+    <div id="loadingContainer" class="loader-container">
+      <div class="spinner"></div>
+      <div class="loader-text">Loading LOVE RUSH Game...</div>
+    </div>
+
+    <div id="root" style="display: none;">
       <div class="game-container">
-        <div class="game-title">LOVE RUSH ❤️</div>
-        <div class="score">
-          <span id="score1">Player 1: 0</span> | <span id="score2">Player 2: 0</span>
+        <div class="game-header">
+          <div class="game-title">LOVE RUSH ❤️</div>
+          <div class="game-status" id="gameStatus">2-Player Online Game • Collect Hearts to Win!</div>
         </div>
-        <div class="game-board" id="gameBoard"></div>
-        <button class="btn-reset" onclick="location.reload()">New Game</button>
-        <div class="controls">
-          <div>Player 1: Arrow Keys | Player 2: WASD</div>
-          <div>Collect Hearts to Score! ❤️</div>
+
+        <div class="game-main">
+          <div class="score-board">
+            <span id="score1">❤️ Player 1: 0</span> | <span id="score2">💗 Player 2: 0</span>
+          </div>
+
+          <div class="share-section">
+            <div class="share-title">Share Game Link:</div>
+            <div class="share-link">
+              <input type="text" id="shareLink" readonly value="">
+              <button onclick="copyLink()">Copy</button>
+            </div>
+          </div>
+
+          <div class="game-board" id="gameBoard"></div>
+
+          <button class="btn-reset" onclick="location.reload()">🔄 New Game</button>
+
+          <div class="controls">
+            <div><strong>Player 1:</strong> ⬆️ Arrow Keys</div>
+            <div><strong>Player 2:</strong> W A S D</div>
+            <div style="margin-top: 5px; opacity: 0.9;">Catch hearts ❤️ to score points!</div>
+          </div>
+
+          <div class="mobile-controls" id="mobileControls">
+            <div class="dpad">
+              <div class="dpad-btn up" data-player="1" data-dir="up">⬆️</div>
+              <div class="dpad-btn left" data-player="1" data-dir="left">⬅️</div>
+              <div class="dpad-btn down" data-player="1" data-dir="down">⬇️</div>
+              <div class="dpad-btn right" data-player="1" data-dir="right">➡️</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
-      const gameBoard = document.getElementById('gameBoard');
-      const score1El = document.getElementById('score1');
-      const score2El = document.getElementById('score2');
+      const config = {
+        speed: 8,
+        heartSpawnInterval: 800,
+        heartLifetime: 15000
+      };
 
-      let player1 = { x: 100, y: 100, size: 40, score: 0 };
-      let player2 = { x: 900, y: 600, size: 40, score: 0 };
-      let hearts = [];
-      let keys = {};
+      let gameState = {
+        player1: { x: 50, y: 150, size: 40, score: 0 },
+        player2: { x: window.innerWidth - 90, y: window.innerHeight - 200, size: 40, score: 0 },
+        hearts: [],
+        keys: {},
+        isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      };
 
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      function initGame() {
+        document.getElementById('loadingContainer').style.display = 'none';
+        document.getElementById('root').style.display = 'block';
 
-      function spawnHeart() {
-        const heart = {
-          x: Math.random() * (width - 50),
-          y: Math.random() * (height - 150) + 80,
-          size: 24,
-          eaten: false
+        const gameBoard = document.getElementById('gameBoard');
+        const score1El = document.getElementById('score1');
+        const score2El = document.getElementById('score2');
+        const gameStatus = document.getElementById('gameStatus');
+        const shareLinkEl = document.getElementById('shareLink');
+
+        shareLinkEl.value = window.location.href;
+
+        window.copyLink = function() {
+          shareLinkEl.select();
+          document.execCommand('copy');
+          alert('Link copied to clipboard! Share with your friend 🎉');
         };
-        hearts.push(heart);
-        renderHeart(heart);
-      }
 
-      function renderHeart(heart) {
-        const div = document.createElement('div');
-        div.className = 'heart';
-        div.textContent = '❤️';
-        div.style.left = heart.x + 'px';
-        div.style.top = heart.y + 'px';
-        div.id = 'heart-' + hearts.indexOf(heart);
-        gameBoard.appendChild(div);
-      }
-
-      function renderPlayers() {
-        let p1 = document.getElementById('player1');
-        let p2 = document.getElementById('player2');
-
-        if (!p1) {
-          p1 = document.createElement('div');
-          p1.id = 'player1';
-          p1.className = 'player player1';
-          p1.textContent = '💕';
-          gameBoard.appendChild(p1);
-        }
-        if (!p2) {
-          p2 = document.createElement('div');
-          p2.id = 'player2';
-          p2.className = 'player player2';
-          p2.textContent = '💗';
-          gameBoard.appendChild(p2);
+        function spawnHeart() {
+          const margin = 80;
+          const heart = {
+            x: Math.random() * (window.innerWidth - 50),
+            y: Math.random() * (window.innerHeight - margin - 100) + margin,
+            size: 28,
+            eaten: false,
+            createdAt: Date.now()
+          };
+          gameState.hearts.push(heart);
+          renderHeart(heart);
         }
 
-        p1.style.left = player1.x + 'px';
-        p1.style.top = player1.y + 'px';
+        function renderHeart(heart) {
+          const div = document.createElement('div');
+          div.className = 'heart';
+          div.textContent = '❤️';
+          div.style.left = heart.x + 'px';
+          div.style.top = heart.y + 'px';
+          div.id = 'heart-' + gameState.hearts.indexOf(heart);
+          gameBoard.appendChild(div);
+        }
 
-        p2.style.left = player2.x + 'px';
-        p2.style.top = player2.y + 'px';
-      }
+        function renderPlayers() {
+          let p1 = document.getElementById('player1');
+          let p2 = document.getElementById('player2');
 
-      function checkCollision(p1, p2) {
-        const dx = p1.x - p2.x;
-        const dy = p1.y - p2.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < p1.size + p2.size;
-      }
-
-      function update() {
-        const speed = 8;
-
-        // Player 1 controls (Arrow Keys)
-        if (keys['ArrowUp']) player1.y = Math.max(80, player1.y - speed);
-        if (keys['ArrowDown']) player1.y = Math.min(height - player1.size, player1.y + speed);
-        if (keys['ArrowLeft']) player1.x = Math.max(0, player1.x - speed);
-        if (keys['ArrowRight']) player1.x = Math.min(width - player1.size, player1.x + speed);
-
-        // Player 2 controls (WASD)
-        if (keys['w'] || keys['W']) player2.y = Math.max(80, player2.y - speed);
-        if (keys['s'] || keys['S']) player2.y = Math.min(height - player2.size, player2.y + speed);
-        if (keys['a'] || keys['A']) player2.x = Math.max(0, player2.x - speed);
-        if (keys['d'] || keys['D']) player2.x = Math.min(width - player2.size, player2.x + speed);
-
-        // Check heart collisions
-        hearts.forEach((heart, idx) => {
-          if (checkCollision(player1, heart)) {
-            player1.score++;
-            heart.eaten = true;
-            score1El.textContent = 'Player 1: ' + player1.score;
-            document.getElementById('heart-' + idx)?.remove();
+          if (!p1) {
+            p1 = document.createElement('div');
+            p1.id = 'player1';
+            p1.className = 'player player1';
+            p1.innerHTML = '<div class="player-label">You</div>💕';
+            gameBoard.appendChild(p1);
           }
-          if (checkCollision(player2, heart)) {
-            player2.score++;
-            heart.eaten = true;
-            score2El.textContent = 'Player 2: ' + player2.score;
-            document.getElementById('heart-' + idx)?.remove();
+          if (!p2) {
+            p2 = document.createElement('div');
+            p2.id = 'player2';
+            p2.className = 'player player2';
+            p2.innerHTML = '<div class="player-label">Friend</div>💗';
+            gameBoard.appendChild(p2);
           }
+
+          p1.style.left = gameState.player1.x + 'px';
+          p1.style.top = gameState.player1.y + 'px';
+
+          p2.style.left = gameState.player2.x + 'px';
+          p2.style.top = gameState.player2.y + 'px';
+        }
+
+        function checkCollision(p1, p2) {
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          return distance < p1.size + p2.size / 2;
+        }
+
+        function updateScore() {
+          score1El.textContent = `❤️ Player 1: ${gameState.player1.score}`;
+          score2El.textContent = `💗 Player 2: ${gameState.player2.score}`;
+        }
+
+        function update() {
+          const speed = config.speed;
+          const margin = 80;
+
+          if (gameState.keys['ArrowUp']) gameState.player1.y = Math.max(margin, gameState.player1.y - speed);
+          if (gameState.keys['ArrowDown']) gameState.player1.y = Math.min(window.innerHeight - gameState.player1.size, gameState.player1.y + speed);
+          if (gameState.keys['ArrowLeft']) gameState.player1.x = Math.max(0, gameState.player1.x - speed);
+          if (gameState.keys['ArrowRight']) gameState.player1.x = Math.min(window.innerWidth - gameState.player1.size, gameState.player1.x + speed);
+
+          if (gameState.keys['w'] || gameState.keys['W']) gameState.player2.y = Math.max(margin, gameState.player2.y - speed);
+          if (gameState.keys['s'] || gameState.keys['S']) gameState.player2.y = Math.min(window.innerHeight - gameState.player2.size, gameState.player2.y + speed);
+          if (gameState.keys['a'] || gameState.keys['A']) gameState.player2.x = Math.max(0, gameState.player2.x - speed);
+          if (gameState.keys['d'] || gameState.keys['D']) gameState.player2.x = Math.min(window.innerWidth - gameState.player2.size, gameState.player2.x + speed);
+
+          gameState.hearts.forEach((heart, idx) => {
+            if (checkCollision(gameState.player1, heart)) {
+              gameState.player1.score++;
+              heart.eaten = true;
+              document.getElementById('heart-' + idx)?.remove();
+              updateScore();
+            }
+            if (checkCollision(gameState.player2, heart)) {
+              gameState.player2.score++;
+              heart.eaten = true;
+              document.getElementById('heart-' + idx)?.remove();
+              updateScore();
+            }
+          });
+
+          gameState.hearts = gameState.hearts.filter(h => {
+            const age = Date.now() - h.createdAt;
+            if (h.eaten || age > config.heartLifetime) {
+              document.getElementById('heart-' + gameState.hearts.indexOf(h))?.remove();
+              return false;
+            }
+            return true;
+          });
+
+          renderPlayers();
+        }
+
+        function gameLoop() {
+          update();
+          requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', (e) => {
+          gameState.keys[e.key] = true;
         });
 
-        hearts = hearts.filter(h => !h.eaten);
+        document.addEventListener('keyup', (e) => {
+          gameState.keys[e.key] = false;
+        });
+
+        if (gameState.isMobile) {
+          const mobileControls = document.getElementById('mobileControls');
+          mobileControls.addEventListener('touchstart', (e) => {
+            const btn = e.target.closest('.dpad-btn');
+            if (btn) {
+              const dir = btn.dataset.dir;
+              gameState.keys['Arrow' + dir.charAt(0).toUpperCase() + dir.slice(1)] = true;
+            }
+          });
+
+          mobileControls.addEventListener('touchend', (e) => {
+            const btn = e.target.closest('.dpad-btn');
+            if (btn) {
+              const dir = btn.dataset.dir;
+              gameState.keys['Arrow' + dir.charAt(0).toUpperCase() + dir.slice(1)] = false;
+            }
+          });
+        }
+
+        setInterval(spawnHeart, config.heartSpawnInterval);
 
         renderPlayers();
+        updateScore();
+        gameLoop();
+
+        setInterval(() => {
+          const diff = Math.abs(gameState.player1.score - gameState.player2.score);
+          if (diff > 5) {
+            gameStatus.textContent = gameState.player1.score > gameState.player2.score 
+              ? '🎉 Player 1 is winning! 🎉' 
+              : '🎉 Player 2 is winning! 🎉';
+          } else {
+            gameStatus.textContent = '⚔️ It\'s a close match! ⚔️';
+          }
+        }, 2000);
       }
 
-      function gameLoop() {
-        update();
-        requestAnimationFrame(gameLoop);
-      }
-
-      // Keyboard events
-      document.addEventListener('keydown', (e) => {
-        keys[e.key] = true;
-      });
-
-      document.addEventListener('keyup', (e) => {
-        keys[e.key] = false;
-      });
-
-      // Spawn hearts periodically
-      setInterval(spawnHeart, 1000);
-
-      renderPlayers();
-      gameLoop();
+      // Initialize game after small delay to show loading
+      setTimeout(initGame, 500);
     </script>
   </body>
 </html>
