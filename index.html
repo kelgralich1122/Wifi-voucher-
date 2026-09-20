@@ -1,272 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>For Deejah 🌙💖</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      /* Prevents text selection highlighting on mobile tap */
-      -webkit-tap-highlight-color: transparent; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question</title>
+    <style>
+        /* Romantic Night-Sky Theme */
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
 
-    body {
-      /* A magical twilight romantic gradient for "ya Qamar" */
-      background: linear-gradient(135deg, #1b1432, #471944, #a43a60);
-      background-size: 200% 200%;
-      animation: gradientBG 10s ease infinite;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-    }
+        #question-container, #success-container {
+            z-index: 10;
+            padding: 20px;
+        }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
 
-    /* Floating Moons, Stars, and Hearts */
-    .floating-icon {
-      position: absolute;
-      font-size: 24px;
-      animation: floatUp linear infinite;
-      user-select: none;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.6;
-    }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap; /* Keeps it mobile-friendly */
+        }
 
-    @keyframes floatUp {
-      0% {
-        transform: translateY(100vh) scale(0.5) rotate(0deg);
-        opacity: 0;
-      }
-      20% { opacity: 0.8; }
-      80% { opacity: 0.8; }
-      100% {
-        transform: translateY(-10vh) scale(1.2) rotate(360deg);
-        opacity: 0;
-      }
-    }
+        button {
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
 
-    /* Main Container Card */
-    .card {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 40px 25px;
-      border-radius: 24px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      max-width: 90%;
-      width: 380px;
-      z-index: 10;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease-in-out;
-    }
+        #yes-btn {
+            background-color: #ff4d6d;
+            color: white;
+            font-weight: bold;
+        }
 
-    .emoji {
-      font-size: 65px;
-      margin-bottom: 10px;
-      display: block;
-      animation: pulse 2s infinite;
-    }
+        #yes-btn:hover {
+            background-color: #ff3355;
+        }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-      100% { transform: scale(1); }
-    }
+        #no-btn {
+            background-color: #555;
+            color: white;
+        }
 
-    h1 {
-      font-family: 'Georgia', serif;
-      font-size: 26px;
-      color: #333;
-      margin-bottom: 15px;
-    }
+        #success-container {
+            display: none; /* Hidden until "Yes" is clicked */
+        }
 
-    p {
-      color: #555;
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 30px;
-      font-weight: 500;
-    }
+        .success-text {
+            font-size: 1.5em;
+            line-height: 1.6;
+        }
 
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap; /* Allows buttons to wrap if Yes gets too big */
-    }
+        /* Celebratory Falling Hearts Animation */
+        .heart {
+            position: absolute;
+            top: -10vh;
+            font-size: 2em;
+            animation: fall linear forwards;
+            z-index: 5;
+        }
 
-    button {
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .btn-yes {
-      background: linear-gradient(45deg, #e91e63, #ff4081);
-      color: white;
-      z-index: 20;
-    }
-
-    .btn-yes:active {
-      transform: scale(0.95);
-    }
-
-    .btn-no {
-      background-color: #f0f0f0;
-      color: #666;
-    }
-
-    /* Confetti for when she says Yes */
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      animation: fall linear forwards;
-      z-index: 20;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
-  </style>
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="card" id="card">
-    <span class="emoji" id="emoji">🌙💖</span>
-    <h1 id="title">Hey Deejah<br>[ya Qamar] ✨</h1>
-    <p id="message">From being my amazing bestie to my ultimate crush, and now my wonderful partner... you light up my world like the moon. Will you be mine forever? <br><br>— Yours, lemini</p>
-    
-    <div class="buttons">
-      <button class="btn-yes" id="yesBtn" onclick="acceptProposal()">Yes!</button>
-      <button class="btn-no" id="noBtn" onclick="handleNo()">No 💔</button>
+    <!-- Step 1: The Question & Interactive Buttons -->
+    <div id="question-container">
+        <h1>Will you marry me?</h1>
+        <div class="buttons">
+            <button id="yes-btn">Yes!</button>
+            <button id="no-btn">No</button>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Custom messages tailored to your relationship
-    const steps = [
-      {
-        emoji: "🥺🥺",
-        title: "Wait, are you sure?",
-        message: "But we're literally besties! You can't say no to your lemini 🥺",
-        noText: "Still No"
-      },
-      {
-        emoji: "💔😢",
-        title: "Ya Qamar, don't do this!",
-        message: "You're my crush and my partner! Don't break my heart! Give us a chance!",
-        noText: "Nope"
-      },
-      {
-        emoji: "😭✨",
-        title: "Please don't leave me...",
-        message: "You are my moon and my stars. Just tap YES! Make me the happiest person alive!",
-        noText: "No way"
-      }
-    ];
+    <!-- Step 2: The Grand Finale (Revealed after clicking Yes) -->
+    <div id="success-container">
+        <h1>YAY! 💖</h1>
+        <p class="success-text">I love you so much!<br>I can't wait to spend forever with you.</p>
+        <!-- You can easily add an <img> tag here for a cute GIF or photo -->
+    </div>
 
-    let currentStep = 0;
-    let yesScale = 1;
-    let noScale = 1;
+    <script>
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const questionContainer = document.getElementById('question-container');
+        const successContainer = document.getElementById('success-container');
 
-    // Handle tapping "No"
-    function handleNo() {
-      // 1. Change text up to 3 times
-      if (currentStep < steps.length) {
-        const step = steps[currentStep];
-        document.getElementById('emoji').innerText = step.emoji;
-        document.getElementById('title').innerText = step.title;
-        document.getElementById('message').innerText = step.message;
-        document.getElementById('noBtn').innerText = step.noText;
-        currentStep++;
-      } 
-      
-      // 2. On mobile, we make the YES button huge and the NO button tiny on every tap
-      yesScale += 0.4; // Yes button gets bigger
-      noScale -= 0.15; // No button gets smaller
-      
-      document.getElementById('yesBtn').style.transform = `scale(${yesScale})`;
-      document.getElementById('yesBtn').style.margin = `${yesScale * 10}px`;
-      
-      // Hide the 'No' button completely if it gets too small
-      if (noScale <= 0.2) {
-        document.getElementById('noBtn').style.display = 'none';
-      } else {
-        document.getElementById('noBtn').style.transform = `scale(${noScale})`;
-      }
-    }
-
-    // Handle tapping "Yes"
-    function acceptProposal() {
-      document.getElementById('card').innerHTML = `
-        <span class="emoji">💍🥰</span>
-        <h1>She said YES! 🎉</h1>
-        <p>I love you infinitely, Deejah ya Qamar. Let's make forever amazing! 💞<br><br>— lemini</p>
-      `;
-      createConfetti();
-      document.getElementById('card').style.transform = 'scale(1.05)';
-    }
-
-    // Create magical background floating icons (Moons, Stars, Hearts)
-    function createFloatingIcons() {
-      const symbols = ['🌙', '✨', '💖', '⭐', '💕'];
-      setInterval(() => {
-        const icon = document.createElement('div');
-        icon.classList.add('floating-icon');
-        icon.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        icon.style.left = Math.random() * 100 + 'vw';
-        icon.style.animationDuration = (Math.random() * 4 + 5) + 's'; // 5s to 9s float time
-        icon.style.fontSize = (Math.random() * 15 + 15) + 'px'; // Varying sizes
-        document.body.appendChild(icon);
-
-        // Remove from DOM after animation completes to prevent lag
-        setTimeout(() => {
-          icon.remove();
-        }, 9000);
-      }, 300);
-    }
-
-    // Create celebratory confetti on "Yes"
-    function createConfetti() {
-      const colors = ['#e91e63', '#ff4081', '#ff80ab', '#ffd700', '#ffffff'];
-      for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        confetti.style.left = Math.random() * 100 + 'vw';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        // Playful messages for the 'No' button
+        const noMessages = [
+            "Are you sure?",
+            "Really sure?",
+            "Think again!",
+            "Last chance!",
+            "Surely not?",
+            "You might regret this!",
+            "Give it another thought!",
+            "Are you absolutely certain?",
+            "Have a heart!",
+            "Don't be so cold!",
+            "Change of heart?",
+            "Is that your final answer?"
+        ];
         
-        // Randomize shape (some circles, some squares)
-        if (Math.random() > 0.5) {
-          confetti.style.borderRadius = '50%';
+        let messageIndex = 0;
+        let yesScale = 1;
+
+        // Logic for clicking 'No'
+        noBtn.addEventListener('click', () => {
+            // Change the text of the No button
+            noBtn.textContent = noMessages[messageIndex];
+            messageIndex = (messageIndex + 1) % noMessages.length;
+
+            // Progressively enlarge the Yes button
+            yesScale += 0.4;
+            yesBtn.style.transform = `scale(${yesScale})`;
+        });
+
+        // Logic for clicking 'Yes'
+        yesBtn.addEventListener('click', () => {
+            // 1. Hide the question and buttons
+            questionContainer.style.display = 'none';
+            
+            // 2. Show the beautiful success message
+            successContainer.style.display = 'block';
+            
+            // 3. Trigger the celebratory animation
+            startCelebration();
+        });
+
+        // Function to create falling hearts
+        function startCelebration() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️'; // You can change this to confetti emojis too (🎉, ✨)
+                
+                // Randomize starting position and fall speed
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 2 + 3 + 's'; // Falls between 3-5 seconds
+                
+                document.body.appendChild(heart);
+
+                // Clean up hearts after they fall off screen to keep the browser running smoothly
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 250); // Spawns a new heart every 250 milliseconds
         }
-        
-        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        confetti.style.animationDelay = Math.random() * 0.5 + 's';
-        document.body.appendChild(confetti);
-      }
-    }
-
-    // Start background animation
-    createFloatingIcons();
-  </script>
+    </script>
 </body>
-</html>
+  </html>
